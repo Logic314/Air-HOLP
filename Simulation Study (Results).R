@@ -1,6 +1,7 @@
 
-# This file conducts the simulation study in section 4 and saves the results
-# in the files "Threshold results.csv" and "Probability results.csv".
+# This file conducts the compound symmetry simulation study in section 4 and
+# saves the results in the files "Threshold results.csv" and
+# "Probability results.csv".
 # The code is divided into 3 parts:
 # Preparations, Simulations, and Results.
 
