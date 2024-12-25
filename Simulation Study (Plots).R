@@ -1,6 +1,6 @@
 
 # This file reads the results from the files "Threshold results.csv" and
-# "Probability results.csv" then produces the plots in section 4 of the paper.
+# "Probability results.csv" then produces the compound symmetry plots.
 # The code is divided into 5 parts:
 # Preparations, Overview, Heat maps, Box plots, and Line plots.
 # The "Selected settings" section in each plot determines which settings are
