@@ -9,7 +9,7 @@ AirHOLP <- function(X, y, Threshold, r0 = 10, adapt = TRUE,
   # Threshold: screening threshold (Integer)
   # r0: initial penalties (Vector)
   # adapt: if >= 1 adaptive penalty will be used (Binary)
-  # iter: maximum number of iteration for adaptive penalty selection (Integer)
+  # iter: maximum number of iterations for adaptive penalty selection (Integer)
   # Lambda: eigenvalues of XXT, if missing the function will compute it (Vector)
   # U: eigenvectors of XXT, if missing the function will compute it (Matrix)
   # XU: X transpose times U, if missing the function will compute it (Matrix)
@@ -148,4 +148,42 @@ AirHOLP <- function(X, y, Threshold, r0 = 10, adapt = TRUE,
       AirHOLP <- list(index_r0 = index_r0, Beta_r0 = Beta_r0)
     }
   }
+}
+
+GrAirHOLP <- function(X, y, Groups, Threshold, r0 = 10, iter = 10) {
+  # Arguments:-
+  # X: matrix of features (Matrix)
+  # y: response vector (Vector)
+  # Groups: indexes of the last element in each group (Vector)
+  # Threshold: screening threshold for individual features (Integer)
+  # r0: initial penalty (Integer)
+  # iter: maximum number of iteration for adaptive penalty selection (Integer)
+  
+  # Output:-
+  # index_r: ranking of features by Air-HOLP (Matrix)
+  # index_r0: ranking of features by Ridge-HOLP (Matrix)
+  # Beta_r: regression coefficients of Air-HOLP (Matrix)
+  # Beta_r0: regression coefficients of Ridge-HOLP (Matrix)
+  # r: selected penalty parameters by Air-HOLP (Vector)
+  # iter_last: number of iterations used in Air-HOLP (Vector)
+  
+  temp <- AirHOLP(X, y, Threshold, r0 = r0, adapt = TRUE, iter = iter)
+  index_r <- temp$index_r
+  index_r0 <- temp$index_r0
+  Beta_r <- temp$Beta_r
+  Beta_r0 <- temp$Beta_r0
+  r <- temp$r
+  d <- length(Groups)
+  GrBeta_r <- mean(abs(Beta_r[1:Groups[1]]))
+  GrBeta_r0 <- mean(abs(Beta_r0[1:Groups[1]]))
+  for (i in 2:d) {
+    GrBeta_r <- c(GrBeta_r, mean(abs(Beta_r[(Groups[i-1]+1):Groups[i]])))
+    GrBeta_r0 <- c(GrBeta_r0, mean(abs(Beta_r0[(Groups[i-1]+1):Groups[i]])))
+  }
+  Grindex_r <- rank(-GrBeta_r, na.last = NA, ties.method = c("random"))
+  Grindex_r0 <- rank(-GrBeta_r0, na.last = NA, ties.method = c("random"))
+  GrAirHOLP <- list(index_r = index_r, index_r0 = index_r0, 
+                    Grindex_r = Grindex_r, Grindex_r0 = Grindex_r0, 
+                    Beta_r = Beta_r, GrBeta_r = GrBeta_r,
+                    Beta_r0 = Beta_r0, GrBeta_r0 = GrBeta_r0, r = r)
 }
